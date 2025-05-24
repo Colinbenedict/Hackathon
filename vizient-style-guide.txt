@@ -1,0 +1,67 @@
+
+# Vizient Style Guide for UI/UX (Hackathon App)
+
+## Brand Colors (Hex)
+
+- Vizient Orange: #FF4E00
+- Vizient Purple: #565EAA
+- Vizient Green: #93C840
+- Vizient Turquoise: #018380
+- Vizient Yellow: #FFC02E
+- Vizient Gray (text): #444444
+- Vizient White: #FFFFFF
+- Vizient Black: #000000
+
+## Primary Font
+
+- Soleto (Sans-serif)
+  - Use 'Soleto' for all headings and body copy
+  - Fallback: `font-family: 'Soleto', sans-serif`
+
+## Buttons
+
+- Background: Vizient Purple (#565EAA)
+- Text: White
+- Height: 36px
+- Padding: 0 16px
+- Border-radius: 4px
+- Font-size: 14px
+- Font-weight: 500
+- Hover: Slight opacity change (0.92)
+- Focus: Slight opacity change (0.88)
+
+## Inputs & Form Fields
+
+- Text inputs:
+  - Border: none
+  - Border-bottom: 1px solid rgba(0,0,0,.42)
+  - Focused border: 2px solid Vizient Purple
+- Checkboxes:
+  - Default: 24px, border #666
+  - Checked: Background Vizient Purple, checkmark ✓
+- Radio buttons:
+  - Checked: Inner circle fill Vizient Purple
+
+## Headings
+
+- Use sentence case unless all caps is required
+- Main headline: Soleto Medium or Bold, 28-50px
+- Subhead: Soleto Regular or Italic, 16-20px
+
+## Layout
+
+- Use a grid layout (6 or 12 columns)
+- Maintain consistent margin: 0.5in (or 40px)
+- Use white space generously
+
+## General Tone
+
+- Clean, clear, confident
+- Avoid clutter
+- Prioritize user-friendly flow (sign-up form should be front and center)
+
+## Notes
+
+- Avoid gradients, shadows, or border outlines unless specified
+- Do not use Vizient Yellow (#FFC02E) on white backgrounds
+- Always use the registered Vizient® name correctly (not possessive form)

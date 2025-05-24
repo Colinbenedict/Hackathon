@@ -1,0 +1,284 @@
+:root {
+  --bg: #fff;
+  --text: #444444;
+  --accent: #565EAA;
+  --card-bg: #fff;
+  --card-shadow: #565EAA22;
+  --input-bg: #fff;
+  --input-border: 1px solid rgba(0,0,0,.42);
+  --input-focus: 2px solid #565EAA;
+  --button-bg: #565EAA;
+  --button-text: #fff;
+  --button-hover: #4444a0;
+}
+
+.dark-mode {
+  --bg: #1e1e1e;
+  --text: #e0e0e0;
+  --accent: #565EAA;
+  --card-bg: #232336;
+  --card-shadow: #00000044;
+  --input-bg: #232336;
+  --input-border: 1px solid #444;
+  --input-focus: 2px solid #565EAA;
+  --button-bg: #565EAA;
+  --button-text: #fff;
+  --button-hover: #4444a0;
+}
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Soleto', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.vizient-form {
+  background: var(--card-bg);
+  padding: 24px;
+  border-radius: 8px;
+  box-sizing: border-box;
+  margin: 24px auto;
+  max-width: 600px;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.vizient-heading {
+  font-family: 'Soleto', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.vizient-subhead {
+  font-family: 'Soleto', sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.vizient-label {
+  font-family: 'Soleto', sans-serif;
+  font-size: 16px;
+  color: var(--text);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.vizient-input, .vizient-select {
+  font-family: 'Soleto', sans-serif;
+  font-size: 16px;
+  color: var(--text);
+  background: var(--input-bg);
+  border: none;
+  border-bottom: var(--input-border);
+  padding: 8px 0 6px 0;
+  margin-top: 4px;
+  margin-bottom: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-bottom 0.2s;
+}
+
+.vizient-input:focus, .vizient-select:focus {
+  outline: none;
+  border-bottom: var(--input-focus);
+}
+
+.vizient-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+}
+
+.vizient-checkbox {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #666;
+  border-radius: 4px;
+  accent-color: var(--accent);
+  margin-left: 8px;
+}
+
+.vizient-button {
+  background: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  border-radius: 4px;
+  height: 36px;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-right: 8px;
+  transition: transform 0.15s cubic-bezier(0.4, 0.2, 0.2, 1), box-shadow 0.15s;
+  will-change: transform;
+}
+
+.vizient-button:hover,
+.vizient-button:focus-visible {
+  transform: scale(1.06);
+  box-shadow: 0 4px 16px #565EAA33;
+}
+
+.vizient-button:active {
+  transform: scale(0.97);
+}
+
+.vizient-button:focus {
+  opacity: 0.88;
+  outline: none;
+}
+
+.vizient-member-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  margin-bottom: 4px;
+}
+
+.vizient-add-btn, .vizient-remove-btn {
+  background: #FF4E00;
+  color: #fff;
+  font-size: 14px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+
+.vizient-add-btn:hover, .vizient-remove-btn:hover {
+  opacity: 0.92;
+}
+
+.vizient-submit-btn {
+  background: var(--accent);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  height: 40px;
+  border-radius: 4px;
+  margin-top: 16px;
+}
+
+@media (max-width: 600px) {
+  .vizient-form {
+    padding: 16px;
+    max-width: 100%;
+  }
+  .vizient-member-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+.vizient-tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+  gap: 8px;
+}
+
+.vizient-tab {
+  background: var(--card-bg);
+  color: var(--accent);
+  border: 2px solid var(--accent);
+  border-radius: 4px 4px 0 0;
+  font-family: 'Soleto', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 8px 24px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  outline: none;
+}
+
+.vizient-tab-active {
+  background: var(--accent);
+  color: #fff;
+  border-bottom: 2px solid var(--card-bg);
+  z-index: 1;
+}
+
+.vizient-slider {
+  width: 100%;
+  accent-color: var(--accent);
+  height: 4px;
+  margin: 0 8px;
+}
+
+.vizient-slider::-webkit-slider-thumb {
+  background: var(--accent);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  border: none;
+  box-shadow: 0 0 2px #44444433;
+}
+
+.vizient-slider::-moz-range-thumb {
+  background: var(--accent);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  border: none;
+}
+
+.vizient-slider::-ms-thumb {
+  background: var(--accent);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  border: none;
+}
+
+.vizient-table th, .vizient-table td {
+  background: var(--card-bg);
+  color: var(--text);
+}

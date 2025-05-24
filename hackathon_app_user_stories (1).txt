@@ -1,0 +1,185 @@
+
+Hackathon Sign‑Up App – User Stories (Grouped by Feature)
+=========================================================
+
+Feature: Participant Registration & Team Creation
+-------------------------------------------------
+US‑1: As a participant, I want to register my team (2‑5 members) so that we can officially enter the hackathon.
+  Description: A single submitter enters the team name, category, and details for all members in one form.
+  Acceptance Criteria:
+    • The form captures: Team Name (required) and Team Category (required).
+    • The submitter can add 1‑4 additional members’ email and attending location.
+    • Validation prevents submitting with fewer than 2 or more than 5 members.
+    • On successful submission, the team is stored in the Excel data store.
+    • A confirmation email is sent to each member.
+
+US‑2: As an individual, I want to register solo so that an admin can place me on a team later.
+  Description: Solo registrants provide their own information and indicate openness to joining a team.
+  Acceptance Criteria:
+    • The form captures: Email, Attending Location, “Open to join a team” flag.
+    • The entry is saved as an unassigned participant record.
+    • A confirmation email is sent to the individual.
+
+Feature: Team Editing & Management
+----------------------------------
+US‑3: As a team submitter, I want to edit my team details so that I can keep our information up to date.
+  Description: Teams can change name, category, and member list (within 2‑5 limit) until the admin‑defined cutoff.
+  Acceptance Criteria:
+    • An “Edit Registration” link is available after sign‑up.
+    • The team can add or remove members while staying within the member limit.
+    • Changes are persisted to the Excel data store.
+    • Each edit triggers an updated confirmation email to all impacted members.
+
+US‑4: As a participant, I want to edit my personal details so that my information remains accurate.
+  Acceptance Criteria:
+    • The participant can update attending location.
+    • Edits are reflected immediately in the data store and admin views.
+
+Feature: Admin Dashboard & Reporting
+------------------------------------
+US‑5: As an admin, I want to view all sign‑ups so that I can monitor participation.
+  Acceptance Criteria:
+    • Dashboard lists every team and individual record.
+    • Dashboard shows key metrics: Total Participants, Total Teams, Unassigned Individuals.
+
+US‑6: As an admin, I want to filter sign‑ups by participant name so that I can quickly locate records.
+  Acceptance Criteria:
+    • A search/filter input narrows the list by partial or full name match.
+    • Results update in real time.
+
+US‑7: As an admin, I want to export the sign‑up data to Excel so that I can analyze or archive it.
+  Acceptance Criteria:
+    • An “Export to Excel” button downloads the current data set.
+    • The file matches the structure of the underlying data store.
+
+Feature: Registration Questions Management
+------------------------------------------
+US‑8: As an admin, I want to add or modify registration questions so that I can capture the data we need.
+  Acceptance Criteria:
+    • Admin interface allows adding/editing/deleting questions without code changes.
+    • New questions appear instantly on the participant form.
+    • Responses are stored in the data store and included in exports.
+
+Feature: Email Notifications
+----------------------------
+US‑9: As a participant, I want to receive a confirmation email after sign‑up so that I know my registration succeeded.
+  Acceptance Criteria:
+    • Email is sent automatically upon successful submission.
+    • Email includes a summary of submitted data and an edit link.
+
+US‑10: As a participant, I want to receive a confirmation email after any edit so that I stay informed.
+  Acceptance Criteria:
+    • Email is triggered when the participant or team makes changes.
+    • Email lists what was updated.
+
+Feature: Hackathon Countdown Timer
+----------------------------------
+US‑11: As a visitor, I want to see a live countdown timer so that I know how long until the hackathon starts.
+  Acceptance Criteria:
+    • Timer displays days, hours, minutes, seconds until a configurable start date/time.
+    • Timer updates every second without page refresh.
+
+Feature: Confetti Celebration
+-----------------------------
+US‑12: As a participant, I want to see a confetti animation after successful sign‑up so that the experience feels celebratory.
+  Acceptance Criteria:
+    • Confetti burst appears immediately upon form submission success.
+    • Animation does not block further interaction and lasts ≤3 seconds.
+
+Feature: Dark Mode Toggle
+-------------------------
+US‑13: As a user, I want to switch between light and dark themes so that I can choose my preferred viewing style.
+  Acceptance Criteria:
+    • A toggle/icon switches themes instantly.
+    • The chosen theme persists across pages and sessions (local storage).
+
+Feature: Hackathon Hype Audio Autoplay
+--------------------------------------
+US‑14: As a visitor, I want hyped music to play on page load so that I get excited, but I need control to stop it.
+  Acceptance Criteria:
+    • MP3 autoplays when the landing page loads.
+    • Visible player controls allow pause/mute.
+    • Audio does not auto‑restart after being turned off during the same session.
+
+Feature: Participant Dashboard (Nice‑to‑Have)
+---------------------------------------------
+US‑15: As a participant, I want to browse a list of all teams so that I can see who else is competing.
+  Acceptance Criteria:
+    • Read‑only list shows team name, category, member count, and “open to additional members” flag.
+    • List updates automatically as new teams register.
+
+
+UI Design Guidelines
+====================
+
+1. Landing / Sign‑Up Page
+-------------------------
+• Hero Header  
+  – Event logo/title (left)  
+  – LIVE countdown timer (center, large digits)  
+  – Dark‑mode toggle icon (top‑right)  
+  – Tagline: “Build. Code. Win.”
+• Hype Audio Control  
+  – Autoplays “Hackathon Hype Jam” on load  
+  – Play/Pause and Mute icons; remembers user choice during session
+• Registration Card (max‑width 600 px)  
+  – Two tabs: “Register Team” | “Register Solo”  
+  – Sticky **Submit** button at bottom
+• Confetti Hook  
+  – Confetti burst on successful submission (≤ 3 s, non‑blocking)
+• Footer  
+  – Event date, contact email, privacy link
+
+  **Field Layout**
+
+  Register Team  
+    Team Name* [__________]  
+    Category* [Dropdown]  
+    Member 1 Email* [__________] Attending Location* [Dropdown]  
+    Member 2 Email* [__________] Attending Location* [Dropdown]  
+    + Add Member (up to 5)  
+    Open to more members? [Yes/No]
+
+  Register Solo  
+    Email* [__________]  
+    Attending Location* [Dropdown]  
+    Open to join team? [Yes/No]
+
+2. Admin Dashboard
+------------------
+• Header Bar with title, **Export to Excel** button, dark‑mode toggle  
+• Metric Tiles: Total Participants, Total Teams, Unassigned Individuals, Avg Team Size  
+• Sign‑Ups Table  
+  – Search box (filter by participant name)  
+  – Columns: Team Name, Category, Member Emails, Status, Edit icon  
+  – Sort & pagination
+• Question Builder accordion to add/edit/delete registration questions  
+• Export button downloads current data to `.xlsx`
+
+3. Participant Dashboard (Nice‑to‑Have)
+---------------------------------------
+• Responsive grid of read‑only team cards  
+  – Team Name (bold)  
+  – Category badge  
+  – Members (#/5)  
+  – Open‑to‑Members badge (Yes/No)  
+• Search filter by team name/category
+
+4. Global UI Elements
+---------------------
+• Theme  
+  – Light mode: white bg, charcoal text, accent blue  
+  – Dark mode: #1e1e1e bg, light‑gray text  
+  – Choice persisted via localStorage
+• Typography  
+  – Headings: 32 px / 24 px, semibold  
+  – Body: 16 px sans‑serif
+• Forms & Buttons  
+  – 6 px radius, filled primary buttons, outlined secondary  
+  – Inline validation in red
+• Responsiveness  
+  – Breakpoint ≤ 768 px: forms full‑width, tables stack
+• Accessibility  
+  – Color contrast ≥ 4.5:1  
+  – `aria‑label` for audio and theme toggle  
+  – Countdown timer marked `aria‑hidden="true"`
