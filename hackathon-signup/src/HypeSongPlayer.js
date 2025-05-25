@@ -22,11 +22,11 @@ function HypeSongPlayer() {
   };
 
   return (
-    <div style={{ textAlign: "center", margin: "20px 0" }}>
+    <div style={{ textAlign: "center" }}>
       <button
         onClick={handleToggle}
         style={{
-          background: isPlaying ? "#ff9800" : "#2196f3",
+          background: isPlaying ? "#f44336" : "#565EAA",
           color: "white",
           border: "none",
           borderRadius: "30px",
@@ -34,11 +34,12 @@ function HypeSongPlayer() {
           fontSize: "1.3rem",
           fontWeight: "bold",
           cursor: "pointer",
-          boxShadow: isPlaying ? "0 0 10px #ff9800" : "0 0 10px #2196f3",
-          transition: "all 0.2s"
+          boxShadow: isPlaying ? "0 0 15px #f44336" : "0 0 15px #565EAA",
+          transition: "all 0.3s ease",
+          outline: "none",
         }}
       >
-        {isPlaying ? "Pause Hackathon Hype Jam" : "Play Hackathon Hype Jam"}
+        {isPlaying ? "Pause? But why would you... 🤔" : "Click to Play the Hackathon Hype Song! ��"}
       </button>
       <audio
         ref={audioRef}

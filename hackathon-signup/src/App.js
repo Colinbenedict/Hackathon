@@ -8,7 +8,7 @@ import HypeSongPlayer from "./HypeSongPlayer";
 function App() {
   return (
     <Router>
-      <div style={{ padding: "2rem", maxWidth: 600, margin: "auto" }}>
+      <div style={{ padding: "1rem 2rem 2rem 2rem", maxWidth: 600, margin: "auto" }}>
         <HypeSongPlayer />
         <Routes>
           <Route path="/" element={<TeamRegistrationForm />} />
