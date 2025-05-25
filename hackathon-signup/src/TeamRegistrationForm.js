@@ -125,7 +125,7 @@ function TeamRegistrationForm() {
 
   useEffect(() => {
     if (!selectedHackathon) {
-      fetch('http://localhost:5000/api/hackathon-dates')
+      fetch(`${process.env.REACT_APP_API_URL}/api/hackathon-dates`)
         .then(res => res.json())
         .then(data => setHackathonDates(data));
     }
@@ -142,7 +142,7 @@ function TeamRegistrationForm() {
 
   useEffect(() => {
     if (tab === "admin" && selectedHackathon) {
-      fetch('http://localhost:5000/api/hackathon-dates')
+      fetch(`${process.env.REACT_APP_API_URL}/api/hackathon-dates`)
         .then(res => res.json())
         .then(data => {
           const iso = data[selectedHackathon.key];
@@ -160,7 +160,7 @@ function TeamRegistrationForm() {
   useEffect(() => {
     if (tab === "admin" && selectedHackathon) {
       setAdminRegStatusLoading(true);
-      fetch('http://localhost:5000/api/registration-status')
+      fetch(`${process.env.REACT_APP_API_URL}/api/registration-status`)
         .then(res => res.json())
         .then(data => {
           setAdminRegOpen(data[selectedHackathon.key] !== false);
@@ -172,7 +172,7 @@ function TeamRegistrationForm() {
 
   useEffect(() => {
     if (!selectedHackathon) {
-      fetch('http://localhost:5000/api/registration-status')
+      fetch(`${process.env.REACT_APP_API_URL}/api/registration-status`)
         .then(res => res.json())
         .then(data => setRegStatus(data));
     }
@@ -181,7 +181,7 @@ function TeamRegistrationForm() {
   useEffect(() => {
     if (tab === "admin" && selectedHackathon) {
       setAdminQuestionsLoading(true);
-      fetch(`http://localhost:5000/api/hackathon-questions?hackathon=${selectedHackathon.key}`)
+      fetch(`${process.env.REACT_APP_API_URL}/api/hackathon-questions?hackathon=${selectedHackathon.key}`)
         .then(res => res.json())
         .then(data => {
           setAdminQuestions(data.questions || []);
@@ -196,7 +196,7 @@ function TeamRegistrationForm() {
 
   useEffect(() => {
     if (selectedHackathon) {
-      fetch(`http://localhost:5000/api/hackathon-questions?hackathon=${selectedHackathon.key}`)
+      fetch(`${process.env.REACT_APP_API_URL}/api/hackathon-questions?hackathon=${selectedHackathon.key}`)
         .then(res => res.json())
         .then(data => setCustomQuestions(data.questions || []));
     } else {
@@ -223,7 +223,7 @@ function TeamRegistrationForm() {
     if (tab === "admin" && selectedHackathon) {
       setAdminLoading(true);
       setAdminError("");
-      fetch(`http://localhost:5000/api/registrations?hackathon=${selectedHackathon.key}`)
+      fetch(`${process.env.REACT_APP_API_URL}/api/registrations?hackathon=${selectedHackathon.key}`)
         .then(res => res.json())
         .then(data => {
           setAdminRegs(data.registrations || []);
@@ -268,7 +268,7 @@ function TeamRegistrationForm() {
 
   useEffect(() => {
     if (tab === "dashboard" && selectedHackathon) {
-      fetch(`http://localhost:5000/api/registrations?hackathon=${selectedHackathon.key}`)
+      fetch(`${process.env.REACT_APP_API_URL}/api/registrations?hackathon=${selectedHackathon.key}`)
         .then(res => res.json())
         .then(data => {
           setParticipantTeams((data.registrations || []).filter(r => r.reg_type === "team"));
@@ -339,7 +339,7 @@ function TeamRegistrationForm() {
   // 1. Add a helper to check for duplicate emails before submit
   async function checkDuplicateEmails(emails, editCode = null) {
     try {
-      const response = await fetch('http://localhost:5000/api/check-emails', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/check-emails`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ emails, edit_code: editCode }),
@@ -371,7 +371,7 @@ function TeamRegistrationForm() {
       return;
     }
     try {
-      const response = await fetch("http://localhost:5000/api/register", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -430,7 +430,7 @@ function TeamRegistrationForm() {
       return;
     }
     try {
-      const response = await fetch("http://localhost:5000/api/register", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -471,7 +471,7 @@ function TeamRegistrationForm() {
     setError("");
     setMessage("");
     try {
-      const response = await fetch(`http://localhost:5000/api/register/${editCode}`);
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/register/${editCode}`);
       const data = await response.json();
       if (response.ok && data.registration) {
         if (data.registration.hackathon !== selectedHackathon.key) {
@@ -523,7 +523,7 @@ function TeamRegistrationForm() {
       return;
     }
     try {
-      const response = await fetch(`http://localhost:5000/api/register/${editCode}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/register/${editCode}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -583,7 +583,7 @@ function TeamRegistrationForm() {
       return;
     }
     try {
-      const response = await fetch(`http://localhost:5000/api/register/${editCode}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/register/${editCode}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -778,14 +778,14 @@ function TeamRegistrationForm() {
     if (!window.confirm("Are you sure you want to delete this registration? This cannot be undone.")) return;
     setAdminDeleteMessage("");
     try {
-      const response = await fetch(`http://localhost:5000/api/register/${editCode}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/register/${editCode}`, {
         method: "DELETE",
       });
       const data = await response.json();
       if (response.ok) {
         setAdminDeleteMessage("Registration deleted successfully.");
         // Refresh registrations
-        fetch(`http://localhost:5000/api/registrations?hackathon=${selectedHackathon.key}`)
+        fetch(`${process.env.REACT_APP_API_URL}/api/registrations?hackathon=${selectedHackathon.key}`)
           .then(res => res.json())
           .then(data => setAdminRegs(data.registrations || []));
       } else {
@@ -801,7 +801,7 @@ function TeamRegistrationForm() {
     if (!window.confirm("Are you sure you want to delete this registration? This cannot be undone.")) return;
     setEditDeleteMessage("");
     try {
-      const response = await fetch(`http://localhost:5000/api/register/${editCode}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/register/${editCode}`, {
         method: "DELETE",
       });
       const data = await response.json();
@@ -890,7 +890,7 @@ function TeamRegistrationForm() {
     setAdminQuestionsSaveMsg("");
     setAdminQuestionsError("");
     try {
-      const response = await fetch('http://localhost:5000/api/hackathon-questions', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/hackathon-questions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ hackathon_key: selectedHackathon.key, questions: adminQuestions }),
@@ -1994,7 +1994,7 @@ function TeamRegistrationForm() {
                 // Convert local datetime to ISO string
                 const iso = new Date(adminDateInput).toISOString();
                 try {
-                  const response = await fetch('http://localhost:5000/api/hackathon-date', {
+                  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/hackathon-date`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ hackathon_key: selectedHackathon.key, start_datetime: iso }),
@@ -2038,7 +2038,7 @@ function TeamRegistrationForm() {
                 setAdminRegStatusMessage("");
                 setAdminRegStatusLoading(true);
                 try {
-                  const response = await fetch('http://localhost:5000/api/registration-status', {
+                  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/registration-status`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ hackathon_key: selectedHackathon.key, registration_open: adminRegOpen }),
