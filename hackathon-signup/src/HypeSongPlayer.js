@@ -42,7 +42,7 @@ function HypeSongPlayer() {
       </button>
       <audio
         ref={audioRef}
-        src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+        src="/My Song.mp3"
         loop
         style={{ display: "none" }}
       />
