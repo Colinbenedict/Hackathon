@@ -63,7 +63,6 @@ function TeamRegistrationForm() {
   const [adminAuthenticated, setAdminAuthenticated] = useState(() => localStorage.getItem('vizient-admin-auth') === 'true');
   const [adminPasswordInput, setAdminPasswordInput] = useState("");
   const [adminPasswordError, setAdminPasswordError] = useState("");
-  const ADMIN_PASSWORD = 'vizient2024';
   const [showConfetti, setShowConfetti] = useState(false);
   const [signUpCode, setSignUpCode] = useState("");
   const [hackathonDates, setHackathonDates] = useState({});
@@ -1054,13 +1053,27 @@ function TeamRegistrationForm() {
           <button
             className="vizient-button"
             style={{ marginTop: 18, fontSize: 18, padding: '8px 32px' }}
-            onClick={() => {
-              if (adminPasswordInput === ADMIN_PASSWORD) {
-                setAdminAuthenticated(true);
-                localStorage.setItem('vizient-admin-auth', 'true');
-                setAdminPasswordError("");
-              } else {
-                setAdminPasswordError("Incorrect password. Please try again.");
+            onClick={async () => {
+              setAdminPasswordError(""); // Clear previous errors
+              try {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/login`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ password: adminPasswordInput }),
+                });
+                const data = await response.json();
+                if (response.ok) {
+                  setAdminAuthenticated(true);
+                  localStorage.setItem('vizient-admin-auth', 'true');
+                } else {
+                  setAdminPasswordError(data.error || "Login failed. Please check password.");
+                  setAdminAuthenticated(false);
+                  localStorage.removeItem('vizient-admin-auth');
+                }
+              } catch (err) {
+                setAdminPasswordError("Network error during login. Please try again.");
+                setAdminAuthenticated(false);
+                localStorage.removeItem('vizient-admin-auth');
               }
             }}
           >
@@ -1755,13 +1768,27 @@ function TeamRegistrationForm() {
           <button
             className="vizient-button"
             style={{ marginTop: 18, fontSize: 18, padding: '8px 32px' }}
-            onClick={() => {
-              if (adminPasswordInput === ADMIN_PASSWORD) {
-                setAdminAuthenticated(true);
-                localStorage.setItem('vizient-admin-auth', 'true');
-                setAdminPasswordError("");
-              } else {
-                setAdminPasswordError("Incorrect password. Please try again.");
+            onClick={async () => {
+              setAdminPasswordError(""); // Clear previous errors
+              try {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/api/admin/login`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ password: adminPasswordInput }),
+                });
+                const data = await response.json();
+                if (response.ok) {
+                  setAdminAuthenticated(true);
+                  localStorage.setItem('vizient-admin-auth', 'true');
+                } else {
+                  setAdminPasswordError(data.error || "Login failed. Please check password.");
+                  setAdminAuthenticated(false);
+                  localStorage.removeItem('vizient-admin-auth');
+                }
+              } catch (err) {
+                setAdminPasswordError("Network error during login. Please try again.");
+                setAdminAuthenticated(false);
+                localStorage.removeItem('vizient-admin-auth');
               }
             }}
           >

@@ -88,6 +88,21 @@ class HackathonEvent(db.Model):
 with app.app_context():
     db.create_all()
 
+@app.route('/api/admin/login', methods=['POST'])
+def admin_login():
+    data = request.json
+    password_attempt = data.get('password')
+    if not password_attempt:
+        return jsonify({'error': 'Password is required.'}), 400
+
+    # Compare with the ADMIN_PASSWORD from environment variables
+    if password_attempt == ADMIN_PASSWORD:
+        # For simplicity, we'll just return a success message.
+        # In a more complex app, you might issue a session token here.
+        return jsonify({'message': 'Admin login successful!'}), 200
+    else:
+        return jsonify({'error': 'Invalid admin password.'}), 401
+
 @app.route('/api/register', methods=['POST'])
 @limiter.limit("5 per minute")
 def register():
