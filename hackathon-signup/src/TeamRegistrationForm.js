@@ -20,12 +20,11 @@ function TeamRegistrationForm() {
   const [teamName, setTeamName] = useState("");
   const [teamCategory, setTeamCategory] = useState("");
   const [members, setMembers] = useState([
-    { email: "", location: "" },
-    { email: "", location: "" },
+    { email: "" },
+    { email: "" },
   ]);
   const [openToMore, setOpenToMore] = useState(false);
   const [soloEmail, setSoloEmail] = useState("");
-  const [soloLocation, setSoloLocation] = useState("");
   const [soloProficiency, setSoloProficiency] = useState(3); // Default to middle for 1-5
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
@@ -47,10 +46,8 @@ function TeamRegistrationForm() {
     team_name: '',
     team_category: '',
     member_email: '',
-    member_location: '',
     open_to_more: '',
     solo_email: '',
-    solo_location: '',
     solo_proficiency: '',
     edit_code: '',
   });
@@ -241,8 +238,8 @@ function TeamRegistrationForm() {
         setTeamName("");
         setTeamCategory("");
         setMembers([
-          { email: "", location: "" },
-          { email: "", location: "" },
+          { email: "" },
+          { email: "" },
         ]);
         setOpenToMore(false);
         setTeamCustomAnswers({});
@@ -253,7 +250,6 @@ function TeamRegistrationForm() {
         setShowConfetti(false);
       } else if (lastCompletedTab === 'solo') {
         setSoloEmail("");
-        setSoloLocation("");
         setSoloProficiency(3);
         setSoloCustomAnswers({});
         setMessage("");
@@ -316,12 +312,10 @@ function TeamRegistrationForm() {
       if (adminFilters.team_name && !(reg.team_name || '').toLowerCase().includes(adminFilters.team_name.toLowerCase())) return false;
       if (adminFilters.team_category && reg.team_category !== adminFilters.team_category) return false;
       if (adminFilters.member_email && !(reg.members ? JSON.parse(reg.members).some(m => (m.email || '').toLowerCase().includes(adminFilters.member_email.toLowerCase())) : false)) return false;
-      if (adminFilters.member_location && !(reg.members ? JSON.parse(reg.members).some(m => m.location === adminFilters.member_location) : false)) return false;
       if (adminFilters.open_to_more && String(reg.open_to_more ? 'yes' : 'no') !== adminFilters.open_to_more) return false;
       if (adminFilters.edit_code && !(reg.edit_code || '').toLowerCase().includes(adminFilters.edit_code.toLowerCase())) return false;
     } else if (adminTableFilter === 'solo') {
       if (adminFilters.solo_email && !(reg.solo_email || '').toLowerCase().includes(adminFilters.solo_email.toLowerCase())) return false;
-      if (adminFilters.solo_location && reg.solo_location !== adminFilters.solo_location) return false;
       if (adminFilters.solo_proficiency && String(reg.solo_proficiency) !== String(adminFilters.solo_proficiency)) return false;
       if (adminFilters.edit_code && !(reg.edit_code || '').toLowerCase().includes(adminFilters.edit_code.toLowerCase())) return false;
     }
@@ -395,8 +389,8 @@ function TeamRegistrationForm() {
         setTeamName("");
         setTeamCategory("");
         setMembers([
-          { email: "", location: "" },
-          { email: "", location: "" },
+          { email: "" },
+          { email: "" },
         ]);
         setOpenToMore(false);
         setTeamCustomAnswers({});
@@ -435,7 +429,6 @@ function TeamRegistrationForm() {
         body: JSON.stringify({
           reg_type: "solo",
           solo_email: soloEmail,
-          solo_location: soloLocation,
           solo_proficiency: soloProficiency,
           hackathon: selectedHackathon.key,
           solo_custom_answers: soloCustomAnswers,
@@ -450,7 +443,6 @@ function TeamRegistrationForm() {
         setLastCompletedTab('solo');
         // Reset solo form fields
         setSoloEmail("");
-        setSoloLocation("");
         setSoloProficiency(3);
         setSoloCustomAnswers({});
       } else {
@@ -484,15 +476,19 @@ function TeamRegistrationForm() {
         if (data.registration.reg_type === "team") {
           setTeamName(data.registration.team_name || "");
           setTeamCategory(data.registration.team_category || "");
-          setMembers(data.registration.members ? JSON.parse(data.registration.members) : [
-            { email: "", location: "" },
-            { email: "", location: "" },
+          setMembers(data.registration.members ? JSON.parse(data.registration.members).map(m => ({ email: m.email })) : [
+            { email: "" },
+            { email: "" },
           ]);
           setOpenToMore(data.registration.open_to_more || false);
+          // Ensure custom answers are loaded for team
+          setTeamCustomAnswers(data.registration.team_custom_answers ? (typeof data.registration.team_custom_answers === 'string' ? JSON.parse(data.registration.team_custom_answers) : data.registration.team_custom_answers) : {});
+          setTeamMemberCustomAnswers(data.registration.team_member_custom_answers ? (typeof data.registration.team_member_custom_answers === 'string' ? JSON.parse(data.registration.team_member_custom_answers) : data.registration.team_member_custom_answers) : []);
         } else if (data.registration.reg_type === "solo") {
           setSoloEmail(data.registration.solo_email || "");
-          setSoloLocation(data.registration.solo_location || "");
           setSoloProficiency(data.registration.solo_proficiency || 3);
+          // Ensure custom answers are loaded for solo
+          setSoloCustomAnswers(data.registration.solo_custom_answers ? (typeof data.registration.solo_custom_answers === 'string' ? JSON.parse(data.registration.solo_custom_answers) : data.registration.solo_custom_answers) : {});
         }
       } else {
         setError(data.error || "No registration found for that code.");
@@ -547,8 +543,8 @@ function TeamRegistrationForm() {
           setTeamName("");
           setTeamCategory("");
           setMembers([
-            { email: "", location: "" },
-            { email: "", location: "" },
+            { email: "" },
+            { email: "" },
           ]);
           setOpenToMore(false);
           setTab("team");
@@ -587,7 +583,6 @@ function TeamRegistrationForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           solo_email: soloEmail,
-          solo_location: soloLocation,
           solo_proficiency: soloProficiency,
           hackathon: selectedHackathon.key,
           solo_custom_answers: soloCustomAnswers,
@@ -603,7 +598,6 @@ function TeamRegistrationForm() {
           setEditType("");
           setEditId(null);
           setSoloEmail("");
-          setSoloLocation("");
           setSoloProficiency(3);
           setTab("team");
           setEditMessage("");
@@ -668,7 +662,6 @@ function TeamRegistrationForm() {
       'Edit Code', // Team's edit code
       'Team Name',
       'Member Email',
-      'Member Location', // Added for context
       ...teamMemberSpecificQuestions.map(q => q.label),
     ];
     const teamMemberCustomRows = adminRegs
@@ -688,7 +681,6 @@ function TeamRegistrationForm() {
             teamReg.edit_code || '',
             teamReg.team_name || '',
             member.email || '',
-            member.location || '',
             ...teamMemberSpecificQuestions.map(q => memberCustomAns[q.id] || ''),
           ];
         });
@@ -698,7 +690,6 @@ function TeamRegistrationForm() {
     const soloCustomHeaders = [
       'Edit Code',
       'Solo Email',
-      'Solo Location', // Added for context
       'Solo Proficiency', // Added for context
       ...soloSpecificQuestions.map(q => q.label),
     ];
@@ -712,8 +703,7 @@ function TeamRegistrationForm() {
         return [
           reg.edit_code || '',
           reg.solo_email || '',
-          reg.solo_location || '',
-          reg.solo_proficiency || '',
+          getProficiencyLabel(reg.solo_proficiency) + (reg.solo_proficiency ? ` (${reg.solo_proficiency})` : ''), // Display label and value
           ...soloSpecificQuestions.map(q => customAnswers[q.id] || ''),
         ];
       });
@@ -763,12 +753,11 @@ function TeamRegistrationForm() {
     setTeamName("");
     setTeamCategory("");
     setMembers([
-      { email: "", location: "" },
-      { email: "", location: "" },
+      { email: "" },
+      { email: "" },
     ]);
     setOpenToMore(false);
     setSoloEmail("");
-    setSoloLocation("");
     setSoloProficiency(3);
     setEditCode("");
     setEditFound(false);
@@ -784,10 +773,8 @@ function TeamRegistrationForm() {
       team_name: '',
       team_category: '',
       member_email: '',
-      member_location: '',
       open_to_more: '',
       solo_email: '',
-      solo_location: '',
       solo_proficiency: '',
       edit_code: '',
     });
@@ -836,12 +823,11 @@ function TeamRegistrationForm() {
           setTeamName("");
           setTeamCategory("");
           setMembers([
-            { email: "", location: "" },
-            { email: "", location: "" },
+            { email: "" },
+            { email: "" },
           ]);
           setOpenToMore(false);
           setSoloEmail("");
-          setSoloLocation("");
           setSoloProficiency(3);
           setTab("team");
           setEditMessage("");
@@ -1421,23 +1407,6 @@ function TeamRegistrationForm() {
                   required
                 />
               </label>
-              <label className="vizient-label">
-                Attending Location:
-                <select
-                  className="vizient-select"
-                  value={member.location}
-                  onChange={(e) => {
-                    const newMembers = [...members];
-                    newMembers[idx].location = e.target.value;
-                    setMembers(newMembers);
-                  }}
-                  required
-                >
-                  <option value="">Select location</option>
-                  <option value="Onsite">Onsite</option>
-                  <option value="Remote">Remote</option>
-                </select>
-              </label>
               {/* Team member-level custom questions */}
               {customQuestions.filter(q => q.section === 'team_member').map(q =>
                 <div key={q.id}>
@@ -1472,7 +1441,7 @@ function TeamRegistrationForm() {
               className="vizient-button vizient-add-btn"
               type="button"
               onClick={() =>
-                setMembers([...members, { email: "", location: "" }])
+                setMembers([...members, { email: "" }])
               }
             >
               + Add Member
@@ -1514,20 +1483,6 @@ function TeamRegistrationForm() {
               onChange={(e) => setSoloEmail(e.target.value)}
               required
             />
-          </label>
-          <br />
-          <label className="vizient-label">
-            Attending Location:
-            <select
-              className="vizient-select"
-              value={soloLocation}
-              onChange={(e) => setSoloLocation(e.target.value)}
-              required
-            >
-              <option value="">Select location</option>
-              <option value="Onsite">Onsite</option>
-              <option value="Remote">Remote</option>
-            </select>
           </label>
           <br />
           <label className="vizient-label">
@@ -1632,23 +1587,6 @@ function TeamRegistrationForm() {
                       required
                     />
                   </label>
-                  <label className="vizient-label">
-                    Attending Location:
-                    <select
-                      className="vizient-select"
-                      value={member.location}
-                      onChange={(e) => {
-                        const newMembers = [...members];
-                        newMembers[idx].location = e.target.value;
-                        setMembers(newMembers);
-                      }}
-                      required
-                    >
-                      <option value="">Select location</option>
-                      <option value="Onsite">Onsite</option>
-                      <option value="Remote">Remote</option>
-                    </select>
-                  </label>
                   {members.length > 2 && (
                     <button
                       className="vizient-button vizient-remove-btn"
@@ -1667,7 +1605,7 @@ function TeamRegistrationForm() {
                   className="vizient-button vizient-add-btn"
                   type="button"
                   onClick={() =>
-                    setMembers([...members, { email: "", location: "" }])
+                    setMembers([...members, { email: "" }])
                   }
                 >
                   + Add Member
@@ -1714,20 +1652,6 @@ function TeamRegistrationForm() {
                   onChange={(e) => setSoloEmail(e.target.value)}
                   required
                 />
-              </label>
-              <br />
-              <label className="vizient-label">
-                Attending Location:
-                <select
-                  className="vizient-select"
-                  value={soloLocation}
-                  onChange={(e) => setSoloLocation(e.target.value)}
-                  required
-                >
-                  <option value="">Select location</option>
-                  <option value="Onsite">Onsite</option>
-                  <option value="Remote">Remote</option>
-                </select>
               </label>
               <br />
               <label className="vizient-label">
@@ -1823,22 +1747,33 @@ function TeamRegistrationForm() {
       {tab === "admin" && adminAuthenticated && (
         <div>
           <h2 className="vizient-heading">Admin Dashboard</h2>
-          <button className="vizient-button" style={{ marginBottom: 16 }} onClick={handleExportToExcel}>
-            Export to Excel
-          </button>
+
+          {/* Key Metrics */}
+          {!adminLoading && !adminError && (
+            <div style={{ display: 'flex', gap: 24, marginBottom: 24, background: 'var(--card-bg-alt)', padding: 16, borderRadius: 8, boxShadow: '0 1px 4px var(--card-shadow)' }}>
+              <div><strong>Total Teams:</strong> {totalTeams}</div>
+              <div><strong>Total Participants:</strong> {totalParticipants}</div>
+              <div><strong>Unassigned Individuals:</strong> {unassignedIndividuals}</div>
+            </div>
+          )}
+
           {adminLoading && <div>Loading registrations...</div>}
           {adminError && <div style={{ color: "#FF4E00" }}>{adminError}</div>}
           {adminDeleteMessage && <div style={{ color: adminDeleteMessage.includes("success") ? "#93C840" : "#FF4E00", marginBottom: 12 }}>{adminDeleteMessage}</div>}
+
+          {/* Registrations Table & Actions */}
           {!adminLoading && !adminError && (
-            <>
-              <div style={{ display: 'flex', gap: 24, marginBottom: 24 }}>
-                <div><strong>Total Teams:</strong> {totalTeams}</div>
-                <div><strong>Total Participants:</strong> {totalParticipants}</div>
-                <div><strong>Unassigned Individuals:</strong> {unassignedIndividuals}</div>
+            <div style={{ background: 'var(--card-bg)', padding: 24, borderRadius: 12, boxShadow: '0 2px 12px var(--card-shadow)', marginBottom: 32 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 16 }}>
+                <h3 className="vizient-subhead" style={{margin: 0}}>Manage Registrations</h3>
+                <button className="vizient-button" onClick={handleExportToExcel}>
+                  Export to Excel
+                </button>
               </div>
+
               <div style={{ marginBottom: 24, display: 'flex', gap: 24, alignItems: 'center', flexDirection: 'column', alignItems: 'flex-start' }}>
                 <label className="vizient-label" htmlFor="admin-edit-select" style={{ marginBottom: 0 }}>
-                  Edit a registration:
+                  Quick Edit a registration:
                   <select
                     id="admin-edit-select"
                     className="vizient-select"
@@ -1856,8 +1791,8 @@ function TeamRegistrationForm() {
                     ))}
                   </select>
                 </label>
-                {/* Sliding toggle for table filter - now below the dropdown */}
-                <div style={{ display: 'flex', gap: 0, borderRadius: 4, overflow: 'hidden', border: '2px solid #565EAA', marginTop: 16 }}>
+                
+                <div style={{ display: 'flex', gap: 0, borderRadius: 4, overflow: 'hidden', border: '2px solid #565EAA' }}>
                   {['team', 'solo'].map((type) => (
                     <button
                       key={type}
@@ -1877,7 +1812,7 @@ function TeamRegistrationForm() {
                         borderRight: type !== 'solo' ? '1px solid #565EAA' : 'none',
                       }}
                     >
-                      {type === 'team' ? 'Team' : 'Solo'}
+                      {type === 'team' ? 'Team Registrations' : 'Solo Registrations'}
                     </button>
                   ))}
                 </div>
@@ -1890,13 +1825,11 @@ function TeamRegistrationForm() {
                       {adminTableFilter === 'team' && <th style={{ padding: 8 }}>Team Name</th>}
                       {adminTableFilter === 'team' && <th style={{ padding: 8 }}>Category</th>}
                       {adminTableFilter === 'team' && <th style={{ padding: 8 }}>Members</th>}
-                      {adminTableFilter === 'team' && <th style={{ padding: 8 }}>Locations</th>}
                       {adminTableFilter === 'team' && <th style={{ padding: 8 }}>Open to More</th>}
                       {adminTableFilter === 'team' && customQuestions.filter(q => q.section === 'team').map(q => (
                         <th key={q.id} style={{ padding: 8 }}>{q.label}</th>
                       ))}
                       {adminTableFilter === 'solo' && <th style={{ padding: 8 }}>Email</th>}
-                      {adminTableFilter === 'solo' && <th style={{ padding: 8 }}>Location</th>}
                       {adminTableFilter === 'solo' && <th style={{ padding: 8 }}>Proficiency</th>}
                       {adminTableFilter === 'solo' && customQuestions.filter(q => q.section === 'solo').map(q => (
                         <th key={q.id} style={{ padding: 8 }}>{q.label}</th>
@@ -1906,7 +1839,7 @@ function TeamRegistrationForm() {
                     </tr>
                     {/* Filter row */}
                     <tr>
-                      <th></th>
+                      <th></th> {/* Spacer for Type column */}
                       {adminTableFilter === 'team' && (
                         <>
                           <th><input className="vizient-input" style={{ width: '100%' }} placeholder="Search..." value={adminFilters.team_name} onChange={e => handleAdminFilterChange('team_name', e.target.value)} /></th>
@@ -1917,12 +1850,13 @@ function TeamRegistrationForm() {
                             </select>
                           </th>
                           <th><input className="vizient-input" style={{ width: '100%' }} placeholder="Search..." value={adminFilters.member_email} onChange={e => handleAdminFilterChange('member_email', e.target.value)} /></th>
-                          <th>
+                          {/* Location filter was removed */}
+                          {/* <th>
                             <select className="vizient-select" style={{ width: '100%' }} value={adminFilters.member_location} onChange={e => handleAdminFilterChange('member_location', e.target.value)}>
                               <option value="">All</option>
                               {getUniqueValues(adminRegs, 'location', true).map(val => <option key={val} value={val}>{val}</option>)}
                             </select>
-                          </th>
+                          </th> */}
                           <th>
                             <select className="vizient-select" style={{ width: '100%' }} value={adminFilters.open_to_more} onChange={e => handleAdminFilterChange('open_to_more', e.target.value)}>
                               <option value="">All</option>
@@ -1930,27 +1864,36 @@ function TeamRegistrationForm() {
                               <option value="no">No</option>
                             </select>
                           </th>
+                           {/* Spacers for custom team questions */}
+                           {customQuestions.filter(q => q.section === 'team').map(q => (
+                            <th key={`${q.id}-filter`}></th>
+                          ))}
                         </>
                       )}
                       {adminTableFilter === 'solo' && (
                         <>
                           <th><input className="vizient-input" style={{ width: '100%' }} placeholder="Search..." value={adminFilters.solo_email} onChange={e => handleAdminFilterChange('solo_email', e.target.value)} /></th>
-                          <th>
+                          {/* Location filter was removed */}
+                          {/* <th>
                             <select className="vizient-select" style={{ width: '100%' }} value={adminFilters.solo_location} onChange={e => handleAdminFilterChange('solo_location', e.target.value)}>
                               <option value="">All</option>
                               {getUniqueValues(adminRegs, 'solo_location').map(val => <option key={val} value={val}>{val}</option>)}
                             </select>
-                          </th>
+                          </th> */}
                           <th>
                             <select className="vizient-select" style={{ width: '100%' }} value={adminFilters.solo_proficiency} onChange={e => handleAdminFilterChange('solo_proficiency', e.target.value)}>
                               <option value="">All</option>
-                              {getUniqueValues(adminRegs, 'solo_proficiency').map(val => <option key={val} value={val}>{val}</option>)}
+                              {getUniqueValues(adminRegs, 'solo_proficiency').map(val => <option key={val} value={val}>{getProficiencyLabel(val)} ({val})</option>)}
                             </select>
                           </th>
+                          {/* Spacers for custom solo questions */}
+                          {customQuestions.filter(q => q.section === 'solo').map(q => (
+                            <th key={`${q.id}-filter`}></th>
+                          ))}
                         </>
                       )}
                       <th><input className="vizient-input" style={{ width: '100%' }} placeholder="Search..." value={adminFilters.edit_code} onChange={e => handleAdminFilterChange('edit_code', e.target.value)} /></th>
-                      <th></th>
+                      <th></th> {/* Spacer for Delete column */}
                     </tr>
                   </thead>
                   <tbody>
@@ -1976,11 +1919,12 @@ function TeamRegistrationForm() {
                               )) : '-'}
                             </td>
                           )}
-                          {adminTableFilter === 'team' && (
+                          {/* Location data was removed */}
+                          {/* {adminTableFilter === 'team' && (
                             <td style={{ padding: 8 }}>
                               {reg.members ? JSON.parse(reg.members).map((m, i) => m.location).join(', ') : '-'}
                             </td>
-                          )}
+                          )} */}
                           {adminTableFilter === 'team' && (
                             <td style={{ padding: 8 }}>{reg.open_to_more ? 'Yes' : 'No'}</td>
                           )}
@@ -1988,8 +1932,9 @@ function TeamRegistrationForm() {
                             <td key={q.id} style={{ padding: 8 }}>{teamCustom[q.id] || ''}</td>
                           ))}
                           {adminTableFilter === 'solo' && <td style={{ padding: 8 }}>{reg.solo_email}</td>}
-                          {adminTableFilter === 'solo' && <td style={{ padding: 8 }}>{reg.solo_location}</td>}
-                          {adminTableFilter === 'solo' && <td style={{ padding: 8 }}>{reg.solo_proficiency}</td>}
+                          {/* Location data was removed */}
+                          {/* {adminTableFilter === 'solo' && <td style={{ padding: 8 }}>{reg.solo_location}</td>} */}
+                          {adminTableFilter === 'solo' && <td style={{ padding: 8 }}>{getProficiencyLabel(reg.solo_proficiency)} ({reg.solo_proficiency})</td>}
                           {adminTableFilter === 'solo' && customQuestions.filter(q => q.section === 'solo').map(q => (
                             <td key={q.id} style={{ padding: 8 }}>{soloCustom[q.id] || ''}</td>
                           ))}
@@ -2009,213 +1954,234 @@ function TeamRegistrationForm() {
                   </tbody>
                 </table>
               </div>
-              <button
-                className="vizient-button"
-                style={{ margin: '16px 0 24px 0', background: '#888', color: '#fff', fontSize: 14 }}
-                onClick={() => {
-                  setAdminAuthenticated(false);
-                  localStorage.removeItem('vizient-admin-auth');
-                }}
-              >
-                Log Out
-              </button>
-            </>
+            </div>
           )}
-          {/* Date/time picker for hackathon start */}
-          <div style={{ marginBottom: 24, marginTop: 8, display: 'flex', alignItems: 'center', gap: 16 }}>
-            <label className="vizient-label" style={{ marginBottom: 0, fontWeight: 600 }}>
-              Set Start Date/Time for {selectedHackathon.label}:
-              <input
-                type="datetime-local"
-                value={adminDateInput}
-                onChange={e => setAdminDateInput(e.target.value)}
-                style={{ marginLeft: 12, fontSize: 16, padding: '4px 8px', borderRadius: 4, border: '1px solid #ccc' }}
-              />
-            </label>
-            <button
-              className="vizient-button"
-              style={{ fontSize: 15, padding: '6px 18px', borderRadius: 6 }}
-              onClick={async () => {
-                setAdminDateMessage("");
-                if (!adminDateInput) {
-                  setAdminDateMessage("Please select a date and time.");
-                  return;
-                }
-                // Convert local datetime to ISO string
-                const iso = new Date(adminDateInput).toISOString();
-                try {
-                  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/hackathon-date`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ hackathon_key: selectedHackathon.key, start_datetime: iso }),
-                  });
-                  const data = await response.json();
-                  if (response.ok) {
-                    setAdminDateMessage("Start date/time saved!");
-                    setTimeout(() => setAdminDateMessage(""), 1500);
-                  } else {
-                    setAdminDateMessage(data.error || "Failed to save date/time.");
-                  }
-                } catch (err) {
-                  setAdminDateMessage("Network error. Please try again.");
-                }
-              }}
-            >
-              Save
-            </button>
-            {adminDateMessage && <span style={{ color: adminDateMessage.includes("saved") ? '#93C840' : '#FF4E00', fontWeight: 500 }}>{adminDateMessage}</span>}
-          </div>
-          {/* Registration open/close toggle for hackathon */}
-          <div style={{ marginBottom: 24, marginTop: 8, display: 'flex', alignItems: 'center', gap: 16 }}>
-            <label className="vizient-label" style={{ marginBottom: 0, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 10 }}>
-              Registration Open:
-              <input
-                type="checkbox"
-                checked={adminRegOpen}
-                disabled={adminRegStatusLoading}
-                onChange={e => setAdminRegOpen(e.target.checked)}
-                style={{ width: 22, height: 22, accentColor: adminRegOpen ? '#93C840' : '#FF4E00', marginLeft: 8 }}
-              />
-              <span style={{ color: adminRegOpen ? '#93C840' : '#FF4E00', fontWeight: 700, fontSize: 16 }}>
-                {adminRegOpen ? 'Open' : 'Closed'}
-              </span>
-            </label>
-            <button
-              className="vizient-button"
-              style={{ fontSize: 15, padding: '6px 18px', borderRadius: 6 }}
-              disabled={adminRegStatusLoading}
-              onClick={async () => {
-                setAdminRegStatusMessage("");
-                setAdminRegStatusLoading(true);
-                try {
-                  const response = await fetch(`${process.env.REACT_APP_API_URL}/api/registration-status`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ hackathon_key: selectedHackathon.key, registration_open: adminRegOpen }),
-                  });
-                  const data = await response.json();
-                  if (response.ok) {
-                    setAdminRegStatusMessage("Registration status updated!");
-                    setTimeout(() => setAdminRegStatusMessage(""), 1500);
-                  } else {
-                    setAdminRegStatusMessage(data.error || "Failed to update status.");
-                  }
-                } catch (err) {
-                  setAdminRegStatusMessage("Network error. Please try again.");
-                }
-                setAdminRegStatusLoading(false);
-              }}
-            >
-              Save
-            </button>
-            {adminRegStatusMessage && <span style={{ color: adminRegStatusMessage.includes("updated") ? '#93C840' : '#FF4E00', fontWeight: 500 }}>{adminRegStatusMessage}</span>}
-          </div>
-          {/* --- Custom Questions Admin UI --- */}
-          <div style={{ marginBottom: 32, marginTop: 24, background: 'var(--card-bg)', borderRadius: 10, boxShadow: '0 2px 8px #565EAA22', padding: 24 }}>
-            <h3 className="vizient-heading" style={{ fontSize: 22, marginBottom: 12 }}>Custom Registration Questions</h3>
-            {adminQuestionsLoading && <div>Loading questions...</div>}
-            {adminQuestionsError && <div style={{ color: '#FF4E00' }}>{adminQuestionsError}</div>}
-            {adminQuestionsSaveMsg && <div style={{ color: '#93C840' }}>{adminQuestionsSaveMsg}</div>}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-              {adminQuestions.map((q, idx) => (
-                <div key={q.id} style={{ display: 'flex', alignItems: 'center', gap: 28, background: '#f7f7fa', borderRadius: 6, padding: 18, marginBottom: 18, flexWrap: 'wrap' }}>
+
+          {/* Hackathon-Specific Settings */}
+          {!adminLoading && !adminError && (
+            <div style={{ background: 'var(--card-bg)', padding: 24, borderRadius: 12, boxShadow: '0 2px 12px var(--card-shadow)', marginBottom: 32 }}>
+              <h3 className="vizient-subhead" style={{ marginTop:0, marginBottom: 24 }}>Hackathon Settings: {selectedHackathon.label}</h3>
+              {/* Date/time picker for hackathon start */}
+              <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+                <label className="vizient-label" style={{ marginBottom: 0, fontWeight: 600 }}>
+                  Set Start Date/Time:
                   <input
-                    className="vizient-input"
-                    style={{ minWidth: 220, fontSize: 16, flex: '1 1 220px' }}
-                    placeholder="Question label (e.g. T-shirt size)"
-                    value={q.label}
-                    onChange={e => updateQuestion(idx, 'label', e.target.value)}
-                    required
+                    type="datetime-local"
+                    value={adminDateInput}
+                    onChange={e => setAdminDateInput(e.target.value)}
+                    style={{ marginLeft: 12, fontSize: 16, padding: '4px 8px', borderRadius: 4, border: '1px solid #ccc' }}
                   />
-                  <select
-                    className="vizient-select"
-                    value={q.type}
-                    onChange={e => updateQuestion(idx, 'type', e.target.value)}
-                    style={{ fontSize: 16, minWidth: 140, flex: '0 0 140px' }}
-                  >
-                    <option value="text">Text</option>
-                    <option value="dropdown">Dropdown</option>
-                  </select>
-                  {q.type === 'dropdown' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', minWidth: 220 }}>
-                      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                        <input
-                          className="vizient-input"
-                          style={{ minWidth: 120, fontSize: 16, flex: '1 1 120px' }}
-                          placeholder="Add option"
-                          value={newOptionInputs[idx] || ''}
-                          onChange={e => setNewOptionInputs(inputs => ({ ...inputs, [idx]: e.target.value }))}
-                          onKeyDown={e => {
-                            if (e.key === 'Enter') {
-                              e.preventDefault();
-                              addDropdownOption(idx);
-                            }
-                          }}
-                        />
-                        <button
-                          className="vizient-button"
-                          style={{ padding: '6px 12px', fontSize: 15, borderRadius: 6 }}
-                          type="button"
-                          onClick={() => addDropdownOption(idx)}
-                        >
-                          + Add Option
-                        </button>
-                      </div>
-                      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 6 }}>
-                        {(q.options || []).map(opt => (
-                          <span key={opt} style={{ background: '#565EAA', color: '#fff', borderRadius: 12, padding: '4px 12px', display: 'flex', alignItems: 'center', fontSize: 15 }}>
-                            {opt}
+                </label>
+                <button
+                  className="vizient-button"
+                  style={{ fontSize: 15, padding: '6px 18px', borderRadius: 6 }}
+                  onClick={async () => {
+                    setAdminDateMessage("");
+                    if (!adminDateInput) {
+                      setAdminDateMessage("Please select a date and time.");
+                      return;
+                    }
+                    // Convert local datetime to ISO string
+                    const iso = new Date(adminDateInput).toISOString();
+                    try {
+                      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/hackathon-date`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ hackathon_key: selectedHackathon.key, start_datetime: iso }),
+                      });
+                      const data = await response.json();
+                      if (response.ok) {
+                        setAdminDateMessage("Start date/time saved!");
+                        // Also update hackathonDates state for immediate countdown reflection
+                        setHackathonDates(prev => ({...prev, [selectedHackathon.key]: iso}));
+                        setTimeout(() => setAdminDateMessage(""), 1500);
+                      } else {
+                        setAdminDateMessage(data.error || "Failed to save date/time.");
+                      }
+                    } catch (err) {
+                      setAdminDateMessage("Network error. Please try again.");
+                    }
+                  }}
+                >
+                  Save Date
+                </button>
+                {adminDateMessage && <span style={{ color: adminDateMessage.includes("saved") ? '#93C840' : '#FF4E00', fontWeight: 500 }}>{adminDateMessage}</span>}
+              </div>
+
+              {/* Registration open/close toggle for hackathon */}
+              <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+                <label className="vizient-label" style={{ marginBottom: 0, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 10 }}>
+                  Registration Status:
+                  <input
+                    type="checkbox"
+                    checked={adminRegOpen}
+                    disabled={adminRegStatusLoading}
+                    onChange={e => setAdminRegOpen(e.target.checked)}
+                    style={{ width: 22, height: 22, accentColor: adminRegOpen ? '#93C840' : '#FF4E00', marginLeft: 8 }}
+                  />
+                  <span style={{ color: adminRegOpen ? '#93C840' : '#FF4E00', fontWeight: 700, fontSize: 16 }}>
+                    {adminRegOpen ? 'Open' : 'Closed'}
+                  </span>
+                </label>
+                <button
+                  className="vizient-button"
+                  style={{ fontSize: 15, padding: '6px 18px', borderRadius: 6 }}
+                  disabled={adminRegStatusLoading}
+                  onClick={async () => {
+                    setAdminRegStatusMessage("");
+                    setAdminRegStatusLoading(true);
+                    try {
+                      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/registration-status`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ hackathon_key: selectedHackathon.key, registration_open: adminRegOpen }),
+                      });
+                      const data = await response.json();
+                      if (response.ok) {
+                        setAdminRegStatusMessage("Registration status updated!");
+                        // Also update regStatus for immediate reflection on home page selector
+                        setRegStatus(prev => ({...prev, [selectedHackathon.key]: adminRegOpen }));
+                        setTimeout(() => setAdminRegStatusMessage(""), 1500);
+                      } else {
+                        setAdminRegStatusMessage(data.error || "Failed to update status.");
+                      }
+                    } catch (err) {
+                      setAdminRegStatusMessage("Network error. Please try again.");
+                    }
+                    setAdminRegStatusLoading(false);
+                  }}
+                >
+                  Save Status
+                </button>
+                {adminRegStatusMessage && <span style={{ color: adminRegStatusMessage.includes("updated") ? '#93C840' : '#FF4E00', fontWeight: 500 }}>{adminRegStatusMessage}</span>}
+              </div>
+
+              {/* --- Custom Questions Admin UI --- */}
+              <div style={{ background: 'var(--card-bg-alt)', borderRadius: 10, boxShadow: '0 1px 4px var(--card-shadow)', padding: 24 }}>
+                <h4 className="vizient-subhead" style={{ fontSize: 20, marginTop:0, marginBottom: 18 }}>Custom Registration Questions</h4>
+                {adminQuestionsLoading && <div>Loading questions...</div>}
+                {adminQuestionsError && <div style={{ color: '#FF4E00' }}>{adminQuestionsError}</div>}
+                {adminQuestionsSaveMsg && <div style={{ color: '#93C840' }}>{adminQuestionsSaveMsg}</div>}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                  {adminQuestions.map((q, idx) => (
+                    <div key={q.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 16, background: 'var(--bg)', borderRadius: 6, padding: 18, flexWrap: 'wrap' }}>
+                      <input
+                        className="vizient-input"
+                        style={{ minWidth: 220, fontSize: 16, flex: '1 1 220px' }}
+                        placeholder="Question label (e.g. T-shirt size)"
+                        value={q.label}
+                        onChange={e => updateQuestion(idx, 'label', e.target.value)}
+                        required
+                      />
+                      <select
+                        className="vizient-select"
+                        value={q.type}
+                        onChange={e => updateQuestion(idx, 'type', e.target.value)}
+                        style={{ fontSize: 16, minWidth: 140, flex: '0 0 140px' }}
+                      >
+                        <option value="text">Text</option>
+                        <option value="dropdown">Dropdown</option>
+                      </select>
+                      {q.type === 'dropdown' && (
+                        <div style={{ display: 'flex', flexDirection: 'column', flex: '1 1 220px', minWidth: 220 }}>
+                          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                            <input
+                              className="vizient-input"
+                              style={{ minWidth: 120, fontSize: 16, flex: '1 1 120px' }}
+                              placeholder="Add option"
+                              value={newOptionInputs[idx] || ''}
+                              onChange={e => setNewOptionInputs(inputs => ({ ...inputs, [idx]: e.target.value }))}
+                              onKeyDown={e => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  addDropdownOption(idx);
+                                }
+                              }}
+                            />
                             <button
+                              className="vizient-button"
+                              style={{ padding: '6px 12px', fontSize: 15, borderRadius: 6, flexShrink: 0 }}
                               type="button"
-                              style={{ marginLeft: 6, background: 'none', border: 'none', color: '#fff', fontWeight: 700, cursor: 'pointer', fontSize: 15 }}
-                              onClick={() => removeDropdownOption(idx, opt)}
-                              title="Remove option"
+                              onClick={() => addDropdownOption(idx)}
                             >
-                              ×
+                              + Add
                             </button>
-                          </span>
-                        ))}
-                      </div>
+                          </div>
+                          {(q.options && q.options.length > 0) && (
+                            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 10 }}>
+                              {(q.options || []).map(opt => (
+                                <span key={opt} style={{ background: '#565EAA', color: '#fff', borderRadius: 12, padding: '4px 10px 4px 12px', display: 'flex', alignItems: 'center', fontSize: 14 }}>
+                                  {opt}
+                                  <button
+                                    type="button"
+                                    style={{ marginLeft: 6, background: 'none', border: 'none', color: '#fff', fontWeight: 700, cursor: 'pointer', fontSize: 14, padding: '0 2px' }}
+                                    onClick={() => removeDropdownOption(idx, opt)}
+                                    title="Remove option"
+                                  >
+                                    ×
+                                  </button>
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      <select
+                        className="vizient-select"
+                        value={q.section || 'team'}
+                        onChange={e => updateQuestion(idx, 'section', e.target.value)}
+                        style={{ fontSize: 16, minWidth: 220, flex: '0 0 220px' }}
+                      >
+                        <option value="team">Team registration (whole team)</option>
+                        <option value="team_member">Team registration (each member)</option>
+                        <option value="solo">Solo registration</option>
+                      </select>
+                      <button
+                        className="vizient-button vizient-remove-btn"
+                        style={{ background: '#FF4E00', color: '#fff', fontWeight: 700, padding: '8px 16px', borderRadius: 6, minWidth: 80, alignSelf: 'center' }}
+                        onClick={() => deleteQuestion(idx)}
+                        type="button"
+                      >
+                        Delete
+                      </button>
                     </div>
-                  )}
-                  <select
-                    className="vizient-select"
-                    value={q.section || 'team'}
-                    onChange={e => updateQuestion(idx, 'section', e.target.value)}
-                    style={{ fontSize: 16, minWidth: 220, flex: '0 0 220px' }}
-                  >
-                    <option value="team">Team registration (whole team)</option>
-                    <option value="team_member">Team registration (each member)</option>
-                    <option value="solo">Solo registration</option>
-                  </select>
+                  ))}
+                </div>
+                <div style={{marginTop: 18, display: 'flex', gap: 16}}>
                   <button
-                    className="vizient-button vizient-remove-btn"
-                    style={{ background: '#FF4E00', color: '#fff', fontWeight: 700, padding: '8px 20px', borderRadius: 6, minWidth: 80 }}
-                    onClick={() => deleteQuestion(idx)}
+                    className="vizient-button"
+                    style={{ fontSize: 16, padding: '8px 24px', borderRadius: 6 }}
+                    onClick={addNewQuestion}
                     type="button"
                   >
-                    Delete
+                    + Add Question
+                  </button>
+                  <button
+                    className="vizient-button"
+                    style={{ fontSize: 16, padding: '8px 24px', borderRadius: 6, background: '#93C840', color: '#fff', fontWeight: 700 }}
+                    onClick={saveQuestions}
+                    type="button"
+                  >
+                    Save All Questions
                   </button>
                 </div>
-              ))}
+              </div>
             </div>
+          )}
+          
+          {/* Log Out Button */}
+          {!adminLoading && !adminError && (
             <button
               className="vizient-button"
-              style={{ marginTop: 18, fontSize: 16, padding: '8px 24px', borderRadius: 6 }}
-              onClick={addNewQuestion}
-              type="button"
+              style={{ marginTop:0, background: '#888', color: '#fff', fontSize: 14 }}
+              onClick={() => {
+                setAdminAuthenticated(false);
+                localStorage.removeItem('vizient-admin-auth');
+              }}
             >
-              + Add Question
+              Log Out
             </button>
-            <button
-              className="vizient-button"
-              style={{ marginTop: 18, marginLeft: 18, fontSize: 16, padding: '8px 24px', borderRadius: 6, background: '#93C840', color: '#fff', fontWeight: 700 }}
-              onClick={saveQuestions}
-              type="button"
-            >
-              Save Questions
-            </button>
-          </div>
+          )}
         </div>
       )}
       {tab === "dashboard" && !selectedHackathon && (
