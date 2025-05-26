@@ -1366,8 +1366,9 @@ function TeamRegistrationForm() {
               required
             >
               <option value="">Select a category</option>
-              <option value="Beginner">Beginner</option>
-              <option value="Advanced">Advanced</option>
+              <option value="Ideation & Strategy">Ideation & Strategy</option>
+              <option value="Creation & Development">Creation & Development</option>
+              <option value="Insights & Optimization">Insights & Optimization</option>
             </select>
           </label>
           <br />
@@ -1587,8 +1588,9 @@ function TeamRegistrationForm() {
                   required
                 >
                   <option value="">Select a category</option>
-                  <option value="Beginner">Beginner</option>
-                  <option value="Advanced">Advanced</option>
+                  <option value="Ideation & Strategy">Ideation & Strategy</option>
+                  <option value="Creation & Development">Creation & Development</option>
+                  <option value="Insights & Optimization">Insights & Optimization</option>
                 </select>
               </label>
               <br />
