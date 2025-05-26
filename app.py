@@ -72,7 +72,6 @@ class Registration(db.Model):
     members = db.Column(db.Text)  # Store as JSON string for team members
     open_to_more = db.Column(db.Boolean)
     solo_email = db.Column(db.String(100))
-    solo_location = db.Column(db.String(50))
     solo_proficiency = db.Column(db.Integer)
     edit_code = db.Column(db.String(12), unique=True)
     team_custom_answers = db.Column(db.Text)  # JSON string
@@ -131,7 +130,6 @@ def register():
             hackathon=hackathon,
             reg_type='solo',
             solo_email=data.get('solo_email'),
-            solo_location=data.get('solo_location'),
             solo_proficiency=data.get('solo_proficiency'),
             edit_code=edit_code,
             solo_custom_answers=json.dumps(data.get('solo_custom_answers', {})),
@@ -159,7 +157,6 @@ def get_registration(edit_code):
         'members': reg.members,
         'open_to_more': reg.open_to_more,
         'solo_email': reg.solo_email,
-        'solo_location': reg.solo_location,
         'solo_proficiency': reg.solo_proficiency,
         'edit_code': reg.edit_code,
         'team_custom_answers': reg.team_custom_answers,
@@ -186,7 +183,6 @@ def update_registration(edit_code):
         reg.team_member_custom_answers = json.dumps(data.get('team_member_custom_answers', json.loads(reg.team_member_custom_answers) if reg.team_member_custom_answers else []))
     elif reg.reg_type == 'solo':
         reg.solo_email = data.get('solo_email', reg.solo_email)
-        reg.solo_location = data.get('solo_location', reg.solo_location)
         reg.solo_proficiency = data.get('solo_proficiency', reg.solo_proficiency)
         reg.solo_custom_answers = json.dumps(data.get('solo_custom_answers', json.loads(reg.solo_custom_answers) if reg.solo_custom_answers else {}))
     if 'hype_song' in data:
@@ -227,7 +223,6 @@ def get_all_registrations():
             'members': reg.members,
             'open_to_more': reg.open_to_more,
             'solo_email': reg.solo_email,
-            'solo_location': reg.solo_location,
             'solo_proficiency': reg.solo_proficiency,
             'edit_code': reg.edit_code,
             'team_custom_answers': reg.team_custom_answers,
