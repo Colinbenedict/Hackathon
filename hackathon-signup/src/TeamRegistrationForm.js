@@ -635,104 +635,125 @@ function TeamRegistrationForm() {
   // Export to Excel handler
   const handleExportToExcel = () => {
     // Get custom questions for teams and solo
-    const teamQuestions = customQuestions.filter(q => q.section === 'team');
-    const soloQuestions = customQuestions.filter(q => q.section === 'solo');
+    const teamSpecificQuestions = customQuestions.filter(q => q.section === 'team');
+    const teamMemberSpecificQuestions = customQuestions.filter(q => q.section === 'team_member');
+    const soloSpecificQuestions = customQuestions.filter(q => q.section === 'solo');
 
-    // Prepare Team data
-    const teamHeaders = [
+    // --- Sheet 1: Team Custom Answers ---
+    const teamCustomHeaders = [
+      'Edit Code',
       'Team Name',
-      'Category',
-      'Members',
-      'Locations',
-      'Open to More',
-      ...teamQuestions.map(q => q.label),
-      'Edit Code',
+      'Team Category', // Added for context
+      'Open to More Members', // Added for context
+      ...teamSpecificQuestions.map(q => q.label),
     ];
-    const teamRows = adminRegs.filter(r => r.reg_type === 'team').map(reg => {
-      const members = reg.members ? JSON.parse(reg.members) : [];
-      // Parse custom answers (may be stringified JSON)
-      let customAnswers = {};
-      try {
-        customAnswers = typeof reg.team_custom_answers === 'string' ? JSON.parse(reg.team_custom_answers) : (reg.team_custom_answers || {});
-      } catch {
-        customAnswers = {};
-      }
-      return [
-        reg.team_name || '',
-        reg.team_category || '',
-        members.map(m => m.email).join('; '),
-        members.map(m => m.location).join('; '),
-        reg.open_to_more ? 'Yes' : 'No',
-        ...teamQuestions.map(q => customAnswers[q.id] || ''),
-        reg.edit_code || '',
-      ];
-    });
-    // Prepare Solo data
-    const soloHeaders = [
-      'Email',
-      'Location',
-      'Proficiency',
-      ...soloQuestions.map(q => q.label),
-      'Edit Code',
+    const teamCustomRows = adminRegs
+      .filter(r => r.reg_type === 'team')
+      .map(reg => {
+        let customAnswers = {};
+        try {
+          customAnswers = typeof reg.team_custom_answers === 'string' ? JSON.parse(reg.team_custom_answers) : (reg.team_custom_answers || {});
+        } catch { customAnswers = {}; }
+        return [
+          reg.edit_code || '',
+          reg.team_name || '',
+          reg.team_category || '',
+          reg.open_to_more ? 'Yes' : 'No',
+          ...teamSpecificQuestions.map(q => customAnswers[q.id] || ''),
+        ];
+      });
+
+    // --- Sheet 2: Team Member Custom Answers ---
+    const teamMemberCustomHeaders = [
+      'Edit Code', // Team's edit code
+      'Team Name',
+      'Member Email',
+      'Member Location', // Added for context
+      ...teamMemberSpecificQuestions.map(q => q.label),
     ];
-    const soloRows = adminRegs.filter(r => r.reg_type === 'solo').map(reg => {
-      // Parse custom answers (may be stringified JSON)
-      let customAnswers = {};
-      try {
-        customAnswers = typeof reg.solo_custom_answers === 'string' ? JSON.parse(reg.solo_custom_answers) : (reg.solo_custom_answers || {});
-      } catch {
-        customAnswers = {};
-      }
-      return [
-        reg.solo_email || '',
-        reg.solo_location || '',
-        reg.solo_proficiency || '',
-        ...soloQuestions.map(q => customAnswers[q.id] || ''),
-        reg.edit_code || '',
-      ];
-    });
-    // Create sheets
+    const teamMemberCustomRows = adminRegs
+      .filter(r => r.reg_type === 'team')
+      .flatMap(teamReg => {
+        const members = teamReg.members ? JSON.parse(teamReg.members) : [];
+        let memberAnswersArray = [];
+        try {
+          memberAnswersArray = typeof teamReg.team_member_custom_answers === 'string'
+            ? JSON.parse(teamReg.team_member_custom_answers)
+            : (teamReg.team_member_custom_answers || []);
+        } catch { memberAnswersArray = []; }
+
+        return members.map((member, idx) => {
+          const memberCustomAns = memberAnswersArray[idx] || {};
+          return [
+            teamReg.edit_code || '',
+            teamReg.team_name || '',
+            member.email || '',
+            member.location || '',
+            ...teamMemberSpecificQuestions.map(q => memberCustomAns[q.id] || ''),
+          ];
+        });
+      });
+
+    // --- Sheet 3: Solo Custom Answers ---
+    const soloCustomHeaders = [
+      'Edit Code',
+      'Solo Email',
+      'Solo Location', // Added for context
+      'Solo Proficiency', // Added for context
+      ...soloSpecificQuestions.map(q => q.label),
+    ];
+    const soloCustomRows = adminRegs
+      .filter(r => r.reg_type === 'solo')
+      .map(reg => {
+        let customAnswers = {};
+        try {
+          customAnswers = typeof reg.solo_custom_answers === 'string' ? JSON.parse(reg.solo_custom_answers) : (reg.solo_custom_answers || {});
+        } catch { customAnswers = {}; }
+        return [
+          reg.edit_code || '',
+          reg.solo_email || '',
+          reg.solo_location || '',
+          reg.solo_proficiency || '',
+          ...soloSpecificQuestions.map(q => customAnswers[q.id] || ''),
+        ];
+      });
+
+    // Create workbook and sheets
     const wb = XLSX.utils.book_new();
-    const wsTeams = XLSX.utils.aoa_to_sheet([teamHeaders, ...teamRows]);
-    const wsSolo = XLSX.utils.aoa_to_sheet([soloHeaders, ...soloRows]);
-    // Set autofilter and table range for Teams
-    const teamRange = XLSX.utils.encode_range({
-      s: { c: 0, r: 0 },
-      e: { c: teamHeaders.length - 1, r: teamRows.length }
-    });
-    wsTeams['!autofilter'] = { ref: teamRange };
-    wsTeams['!ref'] = teamRange;
-    // Color Teams header row
-    teamHeaders.forEach((_, idx) => {
-      const cell = XLSX.utils.encode_cell({ c: idx, r: 0 });
-      if (wsTeams[cell]) {
-        wsTeams[cell].s = {
-          fill: { fgColor: { rgb: "565EAA" } },
-          font: { color: { rgb: "FFFFFF" }, bold: true }
-        };
-      }
-    });
-    // Set autofilter and table range for Solo
-    const soloRange = XLSX.utils.encode_range({
-      s: { c: 0, r: 0 },
-      e: { c: soloHeaders.length - 1, r: soloRows.length }
-    });
-    wsSolo['!autofilter'] = { ref: soloRange };
-    wsSolo['!ref'] = soloRange;
-    // Color Solo header row
-    soloHeaders.forEach((_, idx) => {
-      const cell = XLSX.utils.encode_cell({ c: idx, r: 0 });
-      if (wsSolo[cell]) {
-        wsSolo[cell].s = {
-          fill: { fgColor: { rgb: "565EAA" } },
-          font: { color: { rgb: "FFFFFF" }, bold: true }
-        };
-      }
-    });
-    XLSX.utils.book_append_sheet(wb, wsTeams, 'Teams');
-    XLSX.utils.book_append_sheet(wb, wsSolo, 'Solo');
+
+    const wsTeamCustom = XLSX.utils.aoa_to_sheet([teamCustomHeaders, ...teamCustomRows]);
+    const wsTeamMemberCustom = XLSX.utils.aoa_to_sheet([teamMemberCustomHeaders, ...teamMemberCustomRows]);
+    const wsSoloCustom = XLSX.utils.aoa_to_sheet([soloCustomHeaders, ...soloCustomRows]);
+
+    // Helper to style header and set autofilter
+    const styleSheet = (ws, headers, rows) => {
+      const range = XLSX.utils.encode_range({
+        s: { c: 0, r: 0 },
+        e: { c: headers.length - 1, r: rows.length } // rows.length because data starts at row 1 (0-indexed)
+      });
+      ws['!autofilter'] = { ref: range };
+      ws['!ref'] = range;
+      headers.forEach((_, idx) => {
+        const cell = XLSX.utils.encode_cell({ c: idx, r: 0 });
+        if (ws[cell]) {
+          ws[cell].s = {
+            fill: { fgColor: { rgb: "565EAA" } },
+            font: { color: { rgb: "FFFFFF" }, bold: true }
+          };
+        }
+      });
+    };
+
+    styleSheet(wsTeamCustom, teamCustomHeaders, teamCustomRows);
+    styleSheet(wsTeamMemberCustom, teamMemberCustomHeaders, teamMemberCustomRows);
+    styleSheet(wsSoloCustom, soloCustomHeaders, soloCustomRows);
+
+    XLSX.utils.book_append_sheet(wb, wsTeamCustom, 'Team Custom Answers');
+    XLSX.utils.book_append_sheet(wb, wsTeamMemberCustom, 'Team Member Answers');
+    XLSX.utils.book_append_sheet(wb, wsSoloCustom, 'Solo Custom Answers');
+
     // Download
-    XLSX.writeFile(wb, 'hackathon_registrations.xlsx');
+    XLSX.writeFile(wb, 'hackathon_registrations_custom_answers.xlsx');
   };
 
   // Reset all state when changing hackathon
